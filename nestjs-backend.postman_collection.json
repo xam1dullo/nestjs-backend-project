@@ -1,0 +1,426 @@
+{
+	"info": {
+		"_postman_id": "c9c5840a-e11c-415c-962e-38be4a4ca93a",
+		"name": "nestjs-backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15905030",
+		"_collection_link": "https://speeding-capsule-68866.postman.co/workspace/Team-Workspace~d19af575-99c6-4b6d-8ef9-186657f492b9/collection/15905030-c9c5840a-e11c-415c-962e-38be4a4ca93a?action=share&source=collection_link&creator=15905030"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "SignIn",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var {email, password} = JSON.parse(pm.request.body.raw)",
+									"var newAccessToken = jsonData.accessToken",
+									"",
+									"if (newAccessToken) {",
+									"    postman.setEnvironmentVariable(\"accessToken\", newAccessToken);",
+									"    postman.setEnvironmentVariable(\"email\",email);",
+									"    postman.setEnvironmentVariable(\"password\", password);",
+									"}",
+									"console.log(pm.environment.get(\"password\"), pm.environment.get(\"email\"))",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJpYXQiOjE2OTUxNzg0NjgsImV4cCI6MTk5NTE3ODQ2OH0.FEZOnTZM0iHoUw6_iTrwXM8kR69dBn55jqBgTlB2Yr8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@test.com\",\n    \"password\": \"test12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/signin",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignUp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@test.com\",\n    \"password\": \"test12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/signup",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody)",
+									"var userId = jsonData.userId",
+									"",
+									"if (userId) {",
+									"    postman.setEnvironmentVariable(\"userId\", userId);",
+									"}",
+									"console.log(pm.environment.get(\"userId\"))",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/profile",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "GET ALL EVENTS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/events?event=axiy",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"events"
+							],
+							"query": [
+								{
+									"key": "start",
+									"value": "2023-09",
+									"disabled": true
+								},
+								{
+									"key": "end",
+									"value": "2023-08-31",
+									"disabled": true
+								},
+								{
+									"key": "location",
+									"value": "Azizbek",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "11",
+									"disabled": true
+								},
+								{
+									"key": "event",
+									"value": "axiy"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET EVENT",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/events/clmt6jyjp00014knhhwuzfle0",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"events",
+								"clmt6jyjp00014knhhwuzfle0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE EVENT",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/events/clmt1qxom00054k3plpgyjyey",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"events",
+								"clmt1qxom00054k3plpgyjyey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE EVENT",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Humoyun\",\n    \"description\": \"azizbek event axiy\",\n    \"startDate\": \"2023-09-24T08:46:58.810Z\",\n    \"endDate\": \"2023-09-21T12:00:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/events",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"events"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "11",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "event",
+									"value": "a",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE EVENT",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Xamidullo Xudoyberdiyev\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/events/clmt6jyjp00014knhhwuzfle0",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"events",
+								"clmt6jyjp00014knhhwuzfle0"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{accessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}

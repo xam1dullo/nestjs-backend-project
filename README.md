@@ -13,40 +13,14 @@ $ npx prisma migrate dev --name init
 
 ```bash
 # development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+$ npx prisma studio
 ```
-
-## Test
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+# watch mode
+$ pnpm run start:dev
 ```
 
-## Support
+https://speeding-capsule-68866.postman.co/workspace/Team-Workspace~d19af575-99c6-4b6d-8ef9-186657f492b9/collection/6512c25b97fc8e4d2f995eca?action=share&creator=15905030&active-environment=15905030-e9a53d1d-dfb3-41bd-beca-8bf6615894b1
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
-# nestjs-backend-project
-# nestjs-backend-project
+https://speeding-capsule-68866.postman.co/workspace/Team-Workspace~d19af575-99c6-4b6d-8ef9-186657f492b9/collection/15905030-c9c5840a-e11c-415c-962e-38be4a4ca93a?action=share&creator=15905030&active-environment=15905030-e9a53d1d-dfb3-41bd-beca-8bf6615894b1
