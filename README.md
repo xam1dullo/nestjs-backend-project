@@ -32,6 +32,9 @@ Start the PostgreSQL database
 ```bash
 make postgres
 ```
+```bash
+make redis
+```
 
 ### 3. Prisma Migrate
 
