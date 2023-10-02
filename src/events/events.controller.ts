@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Post,
   Put,
@@ -31,6 +32,7 @@ export interface AuthenticatedRequest extends Request {
 
 @Controller('events')
 export class EventsController {
+  private readonly logger = new Logger(EventsController.name);
   constructor(private readonly eventsService: EventsService) {}
 
   @UseGuards(JwtAuthGuard)
@@ -54,7 +56,7 @@ export class EventsController {
     @Query(new ValidationPipe())
     paginationDto: PaginationDto,
   ): Promise<Event[]> {
-    console.log(paginationDto);
+    this.logger.log(paginationDto);
     return this.eventsService.getEvents(paginationDto);
   }
 
@@ -79,9 +81,7 @@ export class EventsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(
-    @Param('id') { id }: { id: string },
-  ): Promise<Prisma.EventUpdateInput> {
+  async remove(@Param('id') id: string): Promise<Prisma.EventUpdateInput> {
     const event = await this.eventsService.deleteEventById(id);
     return event;
   }

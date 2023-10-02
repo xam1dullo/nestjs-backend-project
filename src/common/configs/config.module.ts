@@ -9,6 +9,6 @@ import configuration from './config';
       load: [configuration],
     }),
   ],
-  exports: [ConfigModule],
+  exports: [],
 })
 export class AppConfigModule {}

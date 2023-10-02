@@ -2,6 +2,7 @@ import { AuthService } from './../auth.service';
 import {
   ExecutionContext,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -16,6 +17,7 @@ type JwtPayload = {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+  private readonly logger = new Logger(JwtService.name);
   constructor(
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
@@ -27,10 +29,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       ignoreExpiration: true,
       secretOrKey: configService.get<string>('jwtSecret'),
     });
+    this.logger.log(
+      "configService.get<string>('jwtSecret')",
+      configService.get<string>('jwtSecret'),
+    );
   }
-
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log(context);
+    this.logger.log(context);
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
@@ -71,12 +76,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
   }
   private extractTokenFromHeader(req: Request): string | undefined {
-    console.log(req);
-
     const authHeader =
       req.headers['authorization'] || req.headers['Authorization'];
     const [type, token] = (authHeader as string).split(' ') || [];
-    console.log(type, token);
+    this.logger.log(type, token);
+
     return type === 'Bearer' ? token : undefined;
   }
 }

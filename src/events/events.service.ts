@@ -1,45 +1,44 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Event, Prisma } from '@prisma/client';
+import { Event, Prisma, Location } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventQueueService } from '../common/queue/event-queue.service';
 import { PaginationDto } from './dto/pagination-event.dto';
-import { UsersService } from '../users/users.service';
-
-export type CustomEventCreateInput = Prisma.EventCreateInput & {
-  userId: string;
-};
+import { CreateEventDto } from './dto/create-event.dto';
 
 @Injectable()
 export class EventsService {
   private readonly logger = new Logger(EventsService.name);
   constructor(
     private readonly prisma: PrismaService,
-    private readonly eventQueue: EventQueueService,
-    private readonly usersService: UsersService,
+    private readonly eventQueue: EventQueueService, // private readonly usersService: UsersService,
   ) {}
 
-  async createEvent(
-    data: Prisma.EventCreateInput,
-    userId?: string,
-  ): Promise<Event> {
+  async createEvent(data: CreateEventDto): Promise<Event> {
     const query = {
-      data,
+      data: {
+        name: data.name,
+        description: data.description,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        userId: data.userId,
+      },
       include: {
         location: true,
       },
     };
+
     const existingUser = await this.prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: data.userId },
     });
 
     if (!existingUser) {
-      throw new Error(`User with id ${data.id} not found.`);
+      throw new Error(`User with id ${existingUser.id} not found.`);
     }
 
     const event = await this.prisma.event.create(query);
 
     if (!event) {
-      throw new Error(`event with id ${data.id} not found.`);
+      throw new Error(`event with id ${existingUser.id} not found.`);
     }
 
     await this.eventQueue.addEvent({
@@ -59,7 +58,7 @@ export class EventsService {
     event: Prisma.EventUpdateInput,
     query?: any,
   ): Promise<Event> {
-    console.log(' UpdateEventDto UpdateEventDto UpdateEventDto', event);
+    this.logger.log(' UpdateEventDto UpdateEventDto UpdateEventDto', event);
     if (!query)
       query = {
         where: {
@@ -67,7 +66,7 @@ export class EventsService {
         },
         data: event,
       };
-    console.log(query);
+    this.logger.log(query);
     const existingEvent = await this.prisma.event.findUnique({
       where: { id: `${event.id ? event.id : query.where.id}` },
     });
@@ -145,14 +144,15 @@ export class EventsService {
     return events;
   }
 
-  async updateEventLocationById({
-    id,
-    locationId,
-  }: {
-    id: string;
-    locationId: string;
-  }): Promise<Event> {
-    console.log(' UpdateEventDto UpdateEventDto UpdateEventDto', event);
+  async updateEventLocationById(
+    id: string,
+    locationId: string,
+  ): Promise<Event> {
+    this.logger.log(
+      ' UpdateEventDto UpdateEventDto UpdateEventDto',
+      locationId,
+      id,
+    );
     const query = {
       where: {
         id,
@@ -166,5 +166,62 @@ export class EventsService {
     await this.eventQueue.updateEvent(newEvent);
 
     return newEvent;
+  }
+  async associateEventWithLocation(
+    id: string,
+    locationId: string,
+  ): Promise<Event> {
+    try {
+      const updatedEvent = await this.prisma.event.update({
+        where: { id },
+        data: {
+          location: {
+            connect: { id: locationId },
+          },
+        },
+      });
+      return updatedEvent;
+    } catch (error) {
+      this.logger.error('Error associating event with location', error);
+      throw error;
+    }
+  }
+
+  async disassociateEventFromLocation(
+    id: string,
+    locationId: string,
+  ): Promise<Event> {
+    try {
+      const updatedEvent = await this.prisma.event.update({
+        where: { id },
+        data: {
+          location: {
+            disconnect: { id: locationId },
+          },
+        },
+      });
+      return updatedEvent;
+    } catch (error) {
+      this.logger.error('Error disassociating event from location', error);
+      throw error;
+    }
+  }
+
+  async getLocationForEvent(id: string): Promise<Location> {
+    try {
+      const event = await this.prisma.event.findUnique({
+        where: { id },
+        include: { location: true },
+      });
+
+      if (!event) {
+        throw new Error(`Event with id ${id} not found.`);
+      }
+
+      return event.location;
+    } catch (error) {
+      this.logger.error('Error fetching locations for event', error);
+      throw error;
+    }
   }
 }

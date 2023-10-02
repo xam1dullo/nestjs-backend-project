@@ -8,7 +8,7 @@ import { EventsSocketService } from './events-socket.service';
 import { UpdateEventsSocketDto } from './dto/update-events-socket.dto';
 import { Logger } from '@nestjs/common';
 import { PaginationDto } from 'src/events/dto/pagination-event.dto';
-import { CustomEventCreateInput } from '../../../events/events.service';
+import { CreateEventDto } from '../../../events/dto/create-event.dto';
 
 @WebSocketGateway()
 export class EventsSocketGateway {
@@ -16,13 +16,12 @@ export class EventsSocketGateway {
 
   constructor(private readonly eventsSocketService: EventsSocketService) {}
 
-  // @UseGuards(JwtAuthGuard)
   @SubscribeMessage('createEvent')
   async create(
-    @MessageBody() createEventsSocketDto: CustomEventCreateInput,
+    @MessageBody() createEventsSocketDto: CreateEventDto,
   ): Promise<Prisma.EventCreateManyInput> {
+    this.logger.log('tetetetetetetetete');
     this.logger.log(createEventsSocketDto);
-
     return await this.eventsSocketService.create(createEventsSocketDto);
   }
 
@@ -35,7 +34,7 @@ export class EventsSocketGateway {
 
   @SubscribeMessage('findOneEvent')
   async findOne(@MessageBody('id') id: string) {
-    console.log('EvvveeentID', id);
+    this.logger.log('EvvveeentID', id);
 
     return await this.eventsSocketService.findOne(id);
   }
@@ -50,7 +49,7 @@ export class EventsSocketGateway {
     @MessageBody('id') id: string,
   ): Promise<Prisma.EventCreateInput> {
     const event = await this.eventsSocketService.remove(id);
-    console.log('EEEEEEEEEEEEEE', event);
+    this.logger.log('EEEEEEEEEEEEEE', event);
     return event;
   }
 }

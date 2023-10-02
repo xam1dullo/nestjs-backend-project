@@ -3,6 +3,7 @@ import { PasswordService } from './password.service';
 import {
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -14,9 +15,11 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from './../prisma/prisma.service';
 import { AuthEntity } from './entities/auth.entity';
 import { CreateAuthDto } from './dto/create-auth.dto';
+import { SecurityConfig } from '../common/configs/config.interface';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
@@ -28,8 +31,8 @@ export class AuthService {
   async signUp(payload: Prisma.UserCreateInput) {
     try {
       const existingUser = await this.usersService.findByEmail(payload.email);
-      console.log({ msg: 'Error', existingUser });
       if (existingUser) {
+        this.logger.warn({ msg: 'Error', existingUser });
         throw new ConflictException(`Email ${payload.email} already exists.`);
       }
 
@@ -45,7 +48,7 @@ export class AuthService {
 
       return this.getToken(newUser.id);
     } catch (error) {
-      console.log(error);
+      this.logger.error('Error', error);
     }
   }
 
@@ -72,7 +75,17 @@ export class AuthService {
   }
 
   async getToken(userId: string) {
-    return { accessToken: this.jwtService.sign({ userId }) };
+    const securityConfig = this.configService.get<SecurityConfig>('security');
+    if (!securityConfig) {
+      throw new Error('JWT_SECRET is not defined in the configuration.');
+    }
+
+    return {
+      accessToken: this.jwtService.sign(
+        { userId },
+        { secret: securityConfig.jwtSecret },
+      ),
+    };
   }
 
   async validateUser(userId: string): Promise<User> {

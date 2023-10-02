@@ -21,7 +21,7 @@ export class CreateEventDto {
   @IsUUID()
   @ApiProperty()
   @IsOptional()
-  userId?: string;
+  userId: string;
 
   @IsDateString()
   @ApiProperty()

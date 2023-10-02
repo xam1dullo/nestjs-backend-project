@@ -9,5 +9,6 @@
     "**/node_module": false,
     "**/node_modules": true
   },
-  "prisma.fileWatcher": true
+  "prisma.fileWatcher": true,
+  "cSpell.words": ["websockets"]
 }

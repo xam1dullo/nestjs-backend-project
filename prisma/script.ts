@@ -2,9 +2,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// type currentUser = User & Event;
 async function main() {
-  prisma.user.deleteMany({});
-  prisma.event.deleteMany({});
+  await prisma.user.deleteMany({});
+  await prisma.event.deleteMany({});
+  await prisma.location.deleteMany({});
 }
 
 main()
