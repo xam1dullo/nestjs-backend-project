@@ -13,6 +13,7 @@ import { RedisIoAdapter } from './common/websocket/socket-io.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   const configService: ConfigService<Record<string, unknown>, false> = app.get(
     ConfigService,
   );

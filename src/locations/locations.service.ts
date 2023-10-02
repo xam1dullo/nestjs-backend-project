@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Location, Prisma } from '@prisma/client';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventQueueService } from '../common/queue/event-queue.service';
 import { EventsService } from '../events/events.service';
+import { CreateLocationDto } from './dto/create-location.dto';
 
 export type CustomLocationCreateInput = Prisma.LocationCreateInput & {
   eventId: string;
@@ -11,41 +12,70 @@ export type CustomLocationCreateInput = Prisma.LocationCreateInput & {
 
 @Injectable()
 export class LocationsService {
+  private readonly logger = new Logger(LocationsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventQueue: EventQueueService,
     private readonly eventsService: EventsService,
   ) {}
-  async create(
-    createLocationDto: CustomLocationCreateInput,
-  ): Promise<Location> {
-    const query = {
-      data: {
-        name: createLocationDto.name,
-      },
-    };
-    const location = await this.prisma.location.create(query);
-    const eventQuery = {
-      where: {
-        id: createLocationDto.eventId,
-      },
-      data: {
-        locationId: location.id,
-      },
-    };
-    await this.eventsService.updateEvent({}, eventQuery);
+
+  async getLocationForEvent(eventId: string): Promise<Location> {
+    const location: Location =
+      await this.eventsService.getLocationForEvent(eventId);
     return location;
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} location`;
+  async createLocationForEvent(
+    eventId: string,
+    createLocationDto: CreateLocationDto,
+  ): Promise<Location> {
+    const location: Location = await this.prisma.location.create({
+      data: createLocationDto,
+    });
+
+    await this.eventsService.associateEventWithLocation(eventId, location.id);
+    return location;
   }
 
-  update(id: number, updateLocationDto: UpdateLocationDto) {
-    return updateLocationDto;
+  async updateLocationForEvent(
+    eventId: string,
+    locationId: string,
+    updateLocationDto: UpdateLocationDto,
+  ): Promise<Location> {
+    this.logger.log({
+      locationId,
+      eventId,
+      updateLocationDto,
+    });
+
+    const location: Location = await this.prisma.location.update({
+      where: {
+        id: locationId,
+      },
+      data: {
+        name: updateLocationDto.name,
+      },
+    });
+
+    await this.eventsService.updateEventLocationById(eventId, location.id);
+    return location;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} location`;
+  async deleteLocationForEvent(
+    eventId: string,
+    locationId: string,
+  ): Promise<Location> {
+    const location: Location = await this.prisma.location.delete({
+      where: {
+        id: locationId,
+      },
+    });
+
+    await this.eventsService.disassociateEventFromLocation(
+      eventId,
+      location.id,
+    );
+    return location;
   }
 }

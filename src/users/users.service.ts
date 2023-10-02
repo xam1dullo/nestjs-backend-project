@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -6,15 +6,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserEntity } from './entities/user.entity';
+import { closeSync } from 'fs';
 
 export const roundsOfHashing = 10;
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
   constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-    private configService: ConfigService,
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity | null> {
@@ -22,7 +24,7 @@ export class UsersService {
       createUserDto.password,
       roundsOfHashing,
     );
-
+    closeSync;
     createUserDto.password = hashedPassword;
 
     return this.prisma.user.create({
@@ -35,7 +37,7 @@ export class UsersService {
   }
 
   findOne(id: string): Promise<UserEntity | null> {
-    console.log({ id });
+    this.logger.log({ id });
     return this.prisma.user.findUnique({ where: { id } });
   }
 
@@ -61,12 +63,12 @@ export class UsersService {
     try {
       const result = await this.prisma.user.findUnique({ where: { email } });
       if (!result) {
-        console.log({ result });
+        this.logger.log({ result });
         return result;
       }
       return result;
     } catch (error) {
-      console.log(error);
+      this.logger.log(error);
       throw new Error('Error creating user'); // You can customize this error message    }
     }
   }

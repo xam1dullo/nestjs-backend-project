@@ -106,7 +106,8 @@
       "**/*.(t|j)s"
     ],
     "prisma": {
-      "schema": "src/database/schema.prisma"
+      "schema": "src/database/schema.prisma",
+      "seed": "ts-node prisma/seed.ts"
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

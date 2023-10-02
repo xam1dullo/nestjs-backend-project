@@ -8,15 +8,16 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EventQueueService } from '../common/queue/event-queue.service';
 import { EventsService } from '../events/events.service';
 import { EventsModule } from '../events/events.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     PrismaModule,
     EventQueuesModule,
+    ConfigModule,
     BullModule.registerQueue({
       name: 'events',
     }),
-    EventsModule,
   ],
   controllers: [LocationsController],
   providers: [

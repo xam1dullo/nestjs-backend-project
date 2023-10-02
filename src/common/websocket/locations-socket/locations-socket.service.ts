@@ -1,18 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { UpdateLocationsSocketDto } from './dto/update-locations-socket.dto';
 import { Location } from '@prisma/client';
-import {
-  CustomLocationCreateInput,
-  LocationsService,
-} from '../../../locations/locations.service';
+import { CreateLocationsSocketDto } from './dto/create-locations-socket.dto';
+import { LocationsService } from '../../../locations/locations.service';
 
 @Injectable()
 export class LocationsSocketService {
+  private readonly logger = new Logger(LocationsSocketService.name);
   constructor(private readonly locationsService: LocationsService) {}
   async create(
-    createLocationsSocketDto: CustomLocationCreateInput,
+    eventId: string,
+    createLocationsSocketDto: CreateLocationsSocketDto,
   ): Promise<Location> {
-    const location = await this.locationsService.create(
+    const location = await this.locationsService.createLocationForEvent(
+      eventId,
       createLocationsSocketDto,
     );
     return location;
@@ -27,7 +28,7 @@ export class LocationsSocketService {
   }
 
   update(id: number, updateLocationsSocketDto: UpdateLocationsSocketDto) {
-    console.log(id, updateLocationsSocketDto);
+    this.logger.log(id, updateLocationsSocketDto);
     return `This action updates a #${id} locationsSocket`;
   }
 

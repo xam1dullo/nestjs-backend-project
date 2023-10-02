@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Event, Prisma } from '@prisma/client';
 import { EventsService } from '../../../events/events.service';
-import { CustomEventCreateInput } from '../../../events/events.service';
+import { CreateEventDto } from '../../../events/dto/create-event.dto';
 
 @Injectable()
 export class EventsSocketService {
   constructor(private readonly eventsService: EventsService) {}
   async create(
-    createEventsSocketDto: CustomEventCreateInput,
+    createEventsSocketDto: CreateEventDto,
   ): Promise<Prisma.EventCreateManyInput> {
     const newEvent = await this.eventsService.createEvent(
       createEventsSocketDto,

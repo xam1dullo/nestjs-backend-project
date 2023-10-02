@@ -19,6 +19,7 @@ export class LocationsSocketGateway {
     @MessageBody() createLocationsSocketDto: CustomLocationCreateInput,
   ): Promise<Prisma.LocationCreateInput> {
     const location = await this.locationsSocketService.create(
+      createLocationsSocketDto.eventId,
       createLocationsSocketDto,
     );
     return location;

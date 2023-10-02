@@ -16,6 +16,15 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@auth": ["./src/auth"],
+      "@config": ["./src/common/configs"],
+      "@websocket*": ["./src/common/websocket"],
+      "@events": ["./src/events"],
+      "@locations": ["./src/locations"],
+      "@prisma": ["./src/prisma"],
+      "@users": ["./src/users"]
+    }
   }
 }
